@@ -33,10 +33,6 @@ export function CitySelector() {
           );
         })}
       </div>
-      <p className="mt-2 px-0.5 text-[11px] leading-snug text-white/45">
-        FixFirst can ingest 311-style civic data and re-rank issues by severity,
-        accessibility impact, duplicate reports, and unresolved time.
-      </p>
     </div>
   );
 }

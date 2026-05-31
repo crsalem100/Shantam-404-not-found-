@@ -6,10 +6,17 @@ export type HazardCategory =
   | "Pothole"
   | "Cracked sidewalk"
   | "Blocked wheelchair ramp"
+  | "Broken curb cut"
+  | "Missing tactile paving"
   | "Broken light"
   | "Unsafe crossing"
+  | "Crosswalk signal issue"
   | "Overflowing trash"
   | "Blocked bike lane"
+  | "Flooding / standing water"
+  | "Damaged sign"
+  | "Fallen tree / branch"
+  | "Scooter / bike obstruction"
   | "Other";
 
 export type PriorityLabel = "Low" | "Medium" | "High" | "Urgent";
@@ -46,6 +53,7 @@ export type ReportSource =
   | "sf311" // San Francisco 311
   | "nyc311" // New York City 311
   | "chicago311" // Chicago 311
+  | "demo311" // other metros — demo data modeled after 311 reports
   | "community"; // community-verified
 
 export interface CommunityUpdate {
@@ -57,6 +65,19 @@ export interface CommunityUpdate {
 
 // Who can see a report (privacy).
 export type ReportVisibility = "public" | "anonymous" | "team" | "facilities";
+
+// Proof-of-fix record attached to a solved/verified-fixed report —
+// the closing half of the report → prioritize → route → fix → verify loop.
+export interface ProofOfFix {
+  fixedBy: string; // department that performed the repair
+  timeToFixDays: number; // days from report to fix
+  fixedAt: string; // ISO date the fix was completed
+  verifiedBy: string[]; // community members who confirmed the fix
+  confidence: number; // 0–100 fix-verification confidence
+  afterNote: string; // what the after-evidence shows
+  impact: string; // what fixing it improved
+  pointsAwarded: number; // civic points awarded to the original reporter
+}
 
 // A juror's verdict on whether a report is credible / well-made.
 export type JurorVerdict = "Confirm" | "Reject" | "Need more info";
@@ -115,6 +136,7 @@ export interface Report {
   geo?: GeoPoint; // real lat/lng (from GPS or Open311)
   hasGps: boolean;
   visibility?: ReportVisibility; // privacy (default "public")
+  proofOfFix?: ProofOfFix; // present on solved / verified-fixed reports
   watchers: number; // how many people are "watching" this incident
   // Juror / credibility
   jury: JurorVote[];

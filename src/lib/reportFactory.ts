@@ -12,6 +12,7 @@ import type {
   GeoPoint,
   HazardCategory,
   JurorVote,
+  ProofOfFix,
   Report,
   ReportSource,
   ReportStatus,
@@ -83,6 +84,7 @@ export interface BuildArgs {
   analysisOverride?: Analysis;
   caseIdOverride?: string; // pin a human case number (e.g. UO-FF-1001)
   juryOverride?: JurorVote[]; // pin the verification panel (demo case)
+  proofOfFix?: ProofOfFix; // attach a proof-of-fix record (solved reports)
 }
 
 export function buildReport(args: BuildArgs): Report {
@@ -100,6 +102,7 @@ export function buildReport(args: BuildArgs): Report {
 
   const duplicates = args.duplicates ?? hash(args.id) % 6;
   const status = args.status ?? "Unresolved";
+  const resolved = status === "Fixed" || status === "Verified fixed";
   const createdAt = args.createdAt;
   const evidence =
     (hasPhoto ? 25 : 0) +
@@ -133,14 +136,14 @@ export function buildReport(args: BuildArgs): Report {
     createdAt,
     updatedAt: args.updatedAt ?? createdAt,
     duplicates,
-    daysUnresolved: status === "Fixed" ? 0 : daysBetween(createdAt),
+    daysUnresolved: resolved ? 0 : daysBetween(createdAt),
     analysis: { ...analysis, duplicateProbability: dupProb },
-    community:
-      status === "Fixed"
-        ? [{ type: "Fixed", at: args.updatedAt ?? createdAt }]
-        : [{ type: "Still broken", at: args.updatedAt ?? createdAt }],
+    community: resolved
+      ? [{ type: status === "Verified fixed" ? "Verified fixed" : "Fixed", at: args.updatedAt ?? createdAt }]
+      : [{ type: "Still broken", at: args.updatedAt ?? createdAt }],
     geo: args.geo,
     hasGps: !!args.geo,
+    proofOfFix: args.proofOfFix,
     watchers: watchersFor(args.id, Date.now()),
     jury: args.juryOverride ?? buildJury(args.id, evidence),
     mapX: 12 + (h % 76),
@@ -212,10 +215,17 @@ const CITY_CASE_DESCRIPTIONS: Record<HazardCategory, { spot: string; desc: strin
   Pothole: { spot: "Pothole — roadway", desc: "Deep pothole in the travel lane reported by multiple drivers." },
   "Cracked sidewalk": { spot: "Damaged sidewalk", desc: "Cracked, uplifted sidewalk slab — trip and accessibility hazard." },
   "Blocked wheelchair ramp": { spot: "ADA curb ramp obstruction", desc: "Curb ramp blocked, no step-free alternative posted." },
+  "Broken curb cut": { spot: "Broken curb cut", desc: "Curb cut crumbling — no flush transition to the crossing." },
+  "Missing tactile paving": { spot: "Missing detectable warning", desc: "No tactile warning strip at the crossing edge." },
   "Broken light": { spot: "Street light out", desc: "Street light outage reported; dark at night." },
   "Unsafe crossing": { spot: "Faded crosswalk / signal", desc: "Crossing markings worn; pedestrians report near-misses." },
+  "Crosswalk signal issue": { spot: "Pedestrian signal fault", desc: "Walk signal not cycling / audible cue dead." },
   "Overflowing trash": { spot: "Sanitation — overflow", desc: "Public receptacle overflowing onto the sidewalk." },
   "Blocked bike lane": { spot: "Bike lane obstruction", desc: "Bike lane blocked, forcing cyclists into traffic." },
+  "Flooding / standing water": { spot: "Drainage — standing water", desc: "Blocked drain leaving standing water across the path." },
+  "Damaged sign": { spot: "Damaged / down sign", desc: "Traffic or wayfinding sign bent, down, or obscured." },
+  "Fallen tree / branch": { spot: "Downed limb", desc: "Fallen tree limb blocking the walkway or lane." },
+  "Scooter / bike obstruction": { spot: "Dockless device obstruction", desc: "Scooters/bikes left across the accessible path." },
   Other: { spot: "Service request", desc: "Public-space hazard reported for inspection." },
 };
 

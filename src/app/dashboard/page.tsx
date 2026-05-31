@@ -4,8 +4,9 @@ import { useMemo, useState } from "react";
 import Link from "next/link";
 import { useStore } from "@/lib/store";
 import { priorityForReport, suggestedTimeframe } from "@/lib/priority";
+import { accessibilityDebtFor } from "@/lib/civic";
 import { Stat, AppHeader, PriorityBadge, AccessibilityBadge } from "@/components/ui";
-import { CategoryIcon, SparkIcon, SpeakerIcon, ArrowIcon, BoltIcon, ShieldIcon, ClockIcon } from "@/components/Icons";
+import { CategoryIcon, SpeakerIcon, ShieldIcon, ClockIcon, BoltIcon, ArrowIcon } from "@/components/Icons";
 import { speak } from "@/lib/voice";
 import { CivicSnapshot } from "@/components/CivicSnapshot";
 import { ScoringModal } from "@/components/ScoringModal";
@@ -20,12 +21,13 @@ export default function DashboardPage() {
     () => [...reports].sort((a, b) => priorityForReport(b).total - priorityForReport(a).total),
     [reports]
   );
-  const open = reports.filter((r) => r.status !== "Fixed");
+  const resolved = (r: Report) => r.status === "Fixed" || r.status === "Verified fixed";
+  const open = reports.filter((r) => !resolved(r));
   const urgent = open.filter((r) => priorityForReport(r).label === "Urgent");
-  const avgSeverity = reports.length ? Math.round(reports.reduce((s, r) => s + r.analysis.severity, 0) / reports.length) : 0;
-  const duplicateClusters = open.filter((r) => r.duplicates >= 2).length;
+  const fixed = reports.filter(resolved).length;
   const avgDays = open.length ? Math.round(open.reduce((s, r) => s + r.daysUnresolved, 0) / open.length) : 0;
-  const top3 = ranked.filter((r) => r.status !== "Fixed").slice(0, 3);
+  const accessDebt = accessibilityDebtFor(reports).score;
+  const top3 = ranked.filter((r) => !resolved(r)).slice(0, 3);
 
   function playBriefing() {
     // ─ ELEVENLABS: generate a spoken facilities briefing ─
@@ -72,27 +74,21 @@ export default function DashboardPage() {
           </div>
         )}
 
-        {/* analytics */}
-        <div className="grid grid-cols-2 gap-2.5">
-          <Stat label="Total reports" value={reports.length} hint={`${open.length} open`} />
-          <Stat label="Urgent reports" value={urgent.length} accent="text-red-400" hint="urgent action needed" />
-          <Stat label="Average severity" value={avgSeverity} hint="across all reports" />
-          <Stat label="Duplicate clusters" value={duplicateClusters} hint="grouped repeat reports" />
+        {/* metrics */}
+        <div className="grid grid-cols-3 gap-2.5">
+          <Stat label="Open" value={open.length} />
+          <Stat label="Urgent" value={urgent.length} accent="text-red-400" />
+          <Stat label="Fixed" value={fixed} accent="text-emerald-300" />
+          <Stat label="Avg days" value={avgDays} />
+          <Stat label="Access debt" value={accessDebt} accent="text-orange-300" />
+          <Stat label="Reports" value={reports.length} />
         </div>
-        <Stat label="Average days unresolved" value={avgDays} hint="open reports" />
 
-        {/* severity-weighting explainer */}
-        <div className="card flex items-start gap-2.5 border-brand-500/20 bg-brand-500/5 p-3.5">
-          <SparkIcon className="mt-0.5 h-4 w-4 shrink-0 text-brand-400" />
-          <p className="text-[12px] leading-relaxed text-white/70">
-            <span className="font-semibold text-white">Severity-weighted ranking.</span> The repair priority
-            engine orders this action list by how dangerous a hazard is — not how many times it was reported.
-            Duplicate clusters and unresolved time only nudge; low-stakes categories like overflowing trash are
-            capped so they can&apos;t reach urgent.{" "}
-            <button onClick={() => setShowScoring(true)} className="font-semibold text-brand-300 underline">
-              How scoring works
-            </button>
-          </p>
+        <div className="flex items-center justify-between px-0.5 text-[12px] text-white/45">
+          <span>Ranked by urgency and impact.</span>
+          <button onClick={() => setShowScoring(true)} className="font-semibold text-brand-300">
+            How scoring works
+          </button>
         </div>
 
         {/* Fix First top 3 */}

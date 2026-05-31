@@ -8,7 +8,7 @@ import { cityByKey } from "@/lib/cities";
 import { useLiveLocation, distanceKm } from "@/lib/geo";
 import { SearchBar } from "@/components/SearchBar";
 import type { SearchAction } from "@/lib/search";
-import { priorityForReport, suggestedTimeframe, whyFirstReasons } from "@/lib/priority";
+import { priorityForReport, suggestedTimeframe } from "@/lib/priority";
 import { speak } from "@/lib/voice";
 import { LiveMap } from "@/components/LiveMap";
 import { IncidentCard } from "@/components/IncidentCard";
@@ -18,24 +18,20 @@ import { MapControls, DEFAULT_FILTERS } from "@/components/MapControls";
 import type { MapFilters } from "@/components/MapControls";
 import { NetworkActivity } from "@/components/NetworkActivity";
 import { VoiceWave } from "@/components/VoiceWave";
-import { CountUp } from "@/components/CountUp";
 import { CivicInsights } from "@/components/CivicInsights";
 import {
   Logo,
   CrosshairIcon,
   BoltIcon,
-  ArrowIcon,
-  CategoryIcon,
   UserIcon,
   ChartIcon,
-  SpeakerIcon,
   FeedIcon,
   MapPinIcon,
 } from "@/components/Icons";
 import { PriorityBadge } from "@/components/ui";
 import type { HazardCategory, Report, ReportSource } from "@/lib/types";
 
-const THREE_ELEVEN: ReportSource[] = ["sf311", "nyc311", "chicago311"];
+const THREE_ELEVEN: ReportSource[] = ["sf311", "nyc311", "chicago311", "demo311"];
 
 export default function MapHome() {
   const { reports, voicePresetId, loadIncidents, feedMeta, loadingFeed, ready, selectedCityKey, setCity } =
@@ -242,12 +238,8 @@ export default function MapHome() {
             </Link>
           </div>
         </div>
-        {/* mission statement — purpose obvious in 5 seconds */}
-        <p className="px-4 pb-2.5 text-[11.5px] leading-snug text-white/55">
-          FixFirst helps cities and campuses prioritize public-space hazards using photos,
-          voice notes, 311 data, and community verification.{" "}
-          <span className="text-white/80">What should be fixed first — and why.</span>
-        </p>
+        {/* one-line purpose */}
+        <p className="px-4 pb-2.5 text-[12px] text-white/50">What to fix first — ranked by urgency and impact.</p>
       </div>
 
       {/* city / data-source selector */}
@@ -403,72 +395,37 @@ export default function MapHome() {
 
 function TodaysFixFirst({ report, onPlay, briefing }: { report: Report; onPlay: () => void; briefing: boolean }) {
   const p = priorityForReport(report);
-  const Icon = CategoryIcon[report.category];
-  const reasons = whyFirstReasons(report);
+  const confirms = report.jury.filter((j) => j.verdict === "Confirm").length;
   return (
-    <div className="mx-3 mt-3 overflow-hidden rounded-2xl border border-brand-500/30 bg-gradient-to-b from-brand-500/15 to-app-900">
-      <Link href={`/reports/${report.id}`} className="block">
-        <div className="flex items-center justify-between px-4 pt-3">
-          <span className="flex items-center gap-1.5 text-[11px] font-bold uppercase tracking-wider text-brand-300">
-            <BoltIcon className="h-3.5 w-3.5" /> Today&apos;s Fix First
-          </span>
+    <div className="mx-3 mt-3 overflow-hidden rounded-2xl border border-white/10 bg-app-900">
+      <Link href={`/reports/${report.id}`} className="block p-4">
+        <div className="text-[11px] font-semibold uppercase tracking-wide text-brand-300">Today&apos;s Fix First</div>
+        <div className="mt-1.5 text-lg font-bold leading-tight text-white">{report.category}</div>
+        <div className="flex items-center gap-1 text-[12px] text-white/55">
+          <MapPinIcon className="h-3.5 w-3.5" /> {report.locationName}
+        </div>
+        <div className="mt-2.5 flex items-center gap-2">
           <PriorityBadge label={p.label} size="sm" />
+          <span className="text-[12px] text-white/55">Priority {p.total}</span>
         </div>
-        <div className="flex items-center gap-3 px-4 pb-2 pt-2">
-          <span className="grid h-11 w-11 shrink-0 place-items-center rounded-xl bg-brand-600 text-white">
-            <Icon className="h-6 w-6" />
-          </span>
-          <div className="min-w-0 flex-1">
-            <div className="font-semibold leading-tight text-white">
-              {report.category} at {report.locationName}
-            </div>
-            <div className="text-[12px] leading-snug text-white/60">Ranked #1 in the repair-priority queue.</div>
-          </div>
-          <div className="text-right">
-            <CountUp to={p.total} className="text-2xl font-bold leading-none text-white" />
-            <div className="text-[9px] uppercase tracking-wide text-white/45">priority</div>
-          </div>
-        </div>
-
-        {/* why this is Fix First */}
-        <div className="mx-4 mb-3 rounded-xl border border-white/10 bg-app-950/40 px-3 py-2">
-          <div className="text-[10px] font-bold uppercase tracking-wider text-brand-300">Why this is Fix First</div>
-          <ul className="mt-1 grid gap-0.5">
-            {reasons.map((r) => (
-              <li key={r} className="flex items-start gap-1.5 text-[11.5px] leading-snug text-white/70">
-                <span className="mt-[5px] h-1 w-1 shrink-0 rounded-full bg-brand-400" /> {r}
-              </li>
-            ))}
-          </ul>
+        <div className="mt-1 text-[12px] text-white/50">
+          {report.duplicates} related{confirms > 0 ? ` · Verified by ${confirms}` : ""}
         </div>
       </Link>
 
       {briefing && (
-        <div className="mx-4 mb-3 flex items-center gap-2 rounded-xl border border-brand-500/30 bg-brand-500/10 px-3 py-2 text-brand-200">
-          <VoiceWave className="h-5 text-brand-300" />
-          <span className="text-[11px] font-medium">Playing voice briefing…</span>
+        <div className="mx-4 mb-3 flex items-center gap-2 text-brand-300">
+          <VoiceWave className="h-4 text-brand-400" />
+          <span className="text-[11px] text-white/55">Playing briefing…</span>
         </div>
       )}
 
-      {/* three actions */}
-      <div className="grid grid-cols-3 gap-px border-t border-white/10 bg-white/[0.06] text-[11px] font-semibold">
-        <Link
-          href={`/reports/${report.id}`}
-          className="flex items-center justify-center gap-1 bg-app-900 px-2 py-2.5 text-center text-brand-300"
-        >
-          <ArrowIcon className="h-3.5 w-3.5" /> Open report
+      <div className="grid grid-cols-2 gap-px border-t border-white/10 bg-white/[0.06] text-[12px] font-semibold">
+        <Link href={`/reports/${report.id}`} className="bg-app-900 px-2 py-2.5 text-center text-brand-300">
+          Open
         </Link>
-        <Link
-          href={`/reports/${report.id}?report=1`}
-          className="flex items-center justify-center gap-1 bg-app-900 px-2 py-2.5 text-center text-white/75"
-        >
-          <FeedIcon className="h-3.5 w-3.5" /> Facilities report
-        </Link>
-        <button
-          onClick={onPlay}
-          className="flex items-center justify-center gap-1 bg-app-900 px-2 py-2.5 text-center text-white/75 active:bg-app-850"
-        >
-          <SpeakerIcon className="h-3.5 w-3.5" /> Play briefing
+        <button onClick={onPlay} className="bg-app-900 px-2 py-2.5 text-center text-white/75 active:bg-app-850">
+          Briefing
         </button>
       </div>
     </div>

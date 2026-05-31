@@ -31,7 +31,7 @@ import {
 export function SearchBar({
   reports,
   onAction,
-  placeholder = "Search city, case ID, category, or command",
+  placeholder = "Search places, reports, cities",
 }: {
   reports: Report[];
   onAction: (a: SearchAction) => void;

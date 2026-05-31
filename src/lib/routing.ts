@@ -13,10 +13,17 @@ export const DEPARTMENT_FOR_CATEGORY: Record<HazardCategory, string> = {
   Pothole: "Public Works / Transportation",
   "Broken light": "Utilities / Facilities",
   "Blocked wheelchair ramp": "Accessibility Services / Facilities",
+  "Broken curb cut": "Accessibility Services / Public Works",
+  "Missing tactile paving": "Accessibility Services / Facilities",
   "Overflowing trash": "Sanitation",
   "Unsafe crossing": "Transportation Safety",
+  "Crosswalk signal issue": "Transportation Safety / Signals",
   "Blocked bike lane": "Mobility / Transportation",
   "Cracked sidewalk": "Public Works / Accessibility Services",
+  "Flooding / standing water": "Public Works / Drainage",
+  "Damaged sign": "Transportation / Signage",
+  "Fallen tree / branch": "Parks / Urban Forestry",
+  "Scooter / bike obstruction": "Mobility / Code Enforcement",
   Other: "Facilities / Triage",
 };
 
@@ -50,6 +57,7 @@ export const SOURCE_LABEL: Record<ReportSource, string> = {
   sf311: "SF 311",
   nyc311: "NYC 311",
   chicago311: "Chicago 311",
+  demo311: "311 demo data",
   community: "Community verified",
 };
 

@@ -17,8 +17,10 @@ import { VoiceRecorder } from "@/components/VoiceRecorder";
 import { CelebrationPopup } from "@/components/CelebrationPopup";
 
 const CATEGORIES: HazardCategory[] = [
-  "Pothole", "Cracked sidewalk", "Blocked wheelchair ramp", "Broken light",
-  "Unsafe crossing", "Overflowing trash", "Blocked bike lane", "Other",
+  "Pothole", "Cracked sidewalk", "Blocked wheelchair ramp", "Broken curb cut",
+  "Missing tactile paving", "Broken light", "Unsafe crossing", "Crosswalk signal issue",
+  "Overflowing trash", "Blocked bike lane", "Flooding / standing water", "Damaged sign",
+  "Fallen tree / branch", "Scooter / bike obstruction", "Other",
 ];
 
 export default function ReportPage() {

@@ -37,10 +37,17 @@ const ALL_CATEGORIES: HazardCategory[] = [
   "Pothole",
   "Cracked sidewalk",
   "Blocked wheelchair ramp",
+  "Broken curb cut",
+  "Missing tactile paving",
   "Broken light",
   "Unsafe crossing",
+  "Crosswalk signal issue",
   "Overflowing trash",
   "Blocked bike lane",
+  "Flooding / standing water",
+  "Damaged sign",
+  "Fallen tree / branch",
+  "Scooter / bike obstruction",
   "Other",
 ];
 
@@ -48,11 +55,18 @@ const ALL_CATEGORIES: HazardCategory[] = [
 const CATEGORY_ALIASES: Record<HazardCategory, string[]> = {
   Pothole: ["pothole", "potholes", "road defect", "street defect"],
   "Cracked sidewalk": ["cracked sidewalk", "sidewalk", "broken sidewalk", "pavement"],
-  "Blocked wheelchair ramp": ["blocked ramp", "wheelchair ramp", "ramp", "curb cut", "accessibility ramp"],
+  "Blocked wheelchair ramp": ["blocked ramp", "wheelchair ramp", "ramp", "accessibility ramp"],
+  "Broken curb cut": ["broken curb cut", "curb cut", "curb ramp"],
+  "Missing tactile paving": ["tactile paving", "tactile", "detectable warning", "truncated domes"],
   "Broken light": ["broken light", "broken lights", "street light", "streetlight", "lamp", "lighting"],
   "Unsafe crossing": ["unsafe crossing", "crossing", "crosswalk", "intersection"],
+  "Crosswalk signal issue": ["crosswalk signal", "walk signal", "pedestrian signal", "signal issue", "beg button"],
   "Overflowing trash": ["overflowing trash", "trash", "garbage", "litter", "bin"],
   "Blocked bike lane": ["blocked bike lane", "bike lane", "cycle lane", "bike"],
+  "Flooding / standing water": ["flooding", "flood", "standing water", "drainage", "ponding"],
+  "Damaged sign": ["damaged sign", "broken sign", "sign down", "stop sign", "signage"],
+  "Fallen tree / branch": ["fallen tree", "tree", "branch", "limb", "downed branch"],
+  "Scooter / bike obstruction": ["scooter", "scooters", "dockless", "bike obstruction", "blocked path"],
   Other: ["other", "misc", "general"],
 };
 

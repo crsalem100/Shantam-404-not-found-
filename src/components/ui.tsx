@@ -89,6 +89,7 @@ const SOURCE_DOT: Record<ReportSource, string> = {
   sf311: "bg-sky-400",
   nyc311: "bg-sky-400",
   chicago311: "bg-sky-400",
+  demo311: "bg-sky-400/70",
   community: "bg-violet-400",
 };
 

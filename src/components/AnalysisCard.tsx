@@ -3,7 +3,7 @@
 import type { Report } from "@/lib/types";
 import { priorityForReport } from "@/lib/priority";
 import { PriorityBadge, AccessibilityBadge, SeverityBar } from "./ui";
-import { CategoryIcon, SparkIcon, UsersIcon, SpeakerIcon } from "./Icons";
+import { CategoryIcon, UsersIcon, SpeakerIcon } from "./Icons";
 import { speak } from "@/lib/voice";
 import { useStore } from "@/lib/store";
 import { pct } from "@/lib/format";
@@ -16,15 +16,13 @@ export function AnalysisCard({ report }: { report: Report }) {
 
   return (
     <div className="card overflow-hidden">
-      <div className="flex items-center justify-between gap-3 border-b border-white/10 bg-brand-500/10 p-4">
+      <div className="flex items-center justify-between gap-3 border-b border-white/10 p-4">
         <div className="flex items-center gap-2.5">
-          <span className="grid h-10 w-10 place-items-center rounded-xl bg-brand-600 text-white">
+          <span className="grid h-10 w-10 place-items-center rounded-xl bg-white/[0.06] text-white/70">
             <Icon className="h-5 w-5" />
           </span>
           <div>
-            <div className="flex items-center gap-1.5 text-[11px] font-semibold uppercase tracking-wide text-brand-400">
-              <SparkIcon className="h-3.5 w-3.5" /> AI analysis
-            </div>
+            <div className="text-[11px] font-semibold uppercase tracking-wide text-white/45">Analysis</div>
             <div className="text-lg font-bold text-white">{a.issueType}</div>
           </div>
         </div>
@@ -32,11 +30,9 @@ export function AnalysisCard({ report }: { report: Report }) {
       </div>
 
       <div className="grid gap-4 p-4 sm:grid-cols-2">
-        <Field label="Severity (hazard-driven)">
+        <Field label="Severity">
           <SeverityBar value={a.severity} />
-          <div className="mt-1 text-[11px] text-white/45">
-            {a.severity}/100 — set by danger, not report volume
-          </div>
+          <div className="mt-1 text-[11px] text-white/45">{a.severity}/100 · hazard-driven</div>
         </Field>
 
         <Field label="Priority label">
@@ -87,9 +83,7 @@ export function AnalysisCard({ report }: { report: Report }) {
       <div className="border-t border-white/10 bg-white/[0.02] p-4">
         <div className="flex items-start justify-between gap-3">
           <div>
-            <div className="text-[11px] font-semibold uppercase tracking-wide text-white/45">
-              City / campus-ready summary
-            </div>
+            <div className="text-[11px] font-semibold uppercase tracking-wide text-white/45">Summary</div>
             <p className="mt-1 text-sm leading-relaxed text-white/80">{a.summary}</p>
           </div>
           <button

@@ -149,6 +149,62 @@ const PROFILES: Record<HazardCategory, CategoryProfile> = {
     transcriptHint:
       "Someone parked across the bike lane again. I had to swerve into the road with cars right behind me.",
   },
+  "Broken curb cut": {
+    baseSeverity: 84,
+    accessibility: "High",
+    affected: ["wheelchair users", "visually impaired pedestrians", "parents with strollers", "delivery workers"],
+    fix: "Repair or rebuild the curb cut to ADA grade and restore the flush transition to the crossing.",
+    safety: "A broken curb cut breaks the step-free path between sidewalk and street, stranding wheeled users mid-route.",
+    transcriptHint: "The curb cut here is broken up — I can't get my wheelchair down to the crosswalk safely.",
+  },
+  "Missing tactile paving": {
+    baseSeverity: 76,
+    accessibility: "High",
+    affected: ["visually impaired pedestrians", "guide-dog users", "elderly pedestrians"],
+    fix: "Install detectable warning (tactile) paving at the crossing edge to standard.",
+    safety: "Missing tactile warnings remove the cue that tells blind pedestrians where the sidewalk meets traffic.",
+    transcriptHint: "There's no tactile strip at this corner, so there's no warning before you step into the street.",
+  },
+  "Crosswalk signal issue": {
+    baseSeverity: 78,
+    accessibility: "Medium",
+    affected: ["pedestrians", "visually impaired pedestrians", "children", "elderly pedestrians"],
+    fix: "Dispatch signals maintenance to fix the walk phase / audible cue and verify timing.",
+    safety: "A faulty walk signal leaves pedestrians guessing when it is safe to cross a live traffic lane.",
+    transcriptHint: "The walk signal never changes and the audible beeper is dead, so people just cross and hope.",
+  },
+  "Flooding / standing water": {
+    baseSeverity: 70,
+    accessibility: "Medium",
+    affected: ["pedestrians", "cyclists", "wheelchair users", "transit riders"],
+    fix: "Clear the blocked drain and inspect grading; place a hazard marker until water recedes.",
+    safety: "Standing water hides hazards, freezes into ice, and forces pedestrians off the path into traffic.",
+    transcriptHint: "This whole walkway floods and you can't get through without stepping into the road.",
+  },
+  "Damaged sign": {
+    baseSeverity: 56,
+    accessibility: "Low",
+    affected: ["drivers", "pedestrians", "cyclists"],
+    fix: "Replace or re-mount the damaged sign; verify it is visible from the approach.",
+    safety: "A missing or damaged sign removes a warning or wayfinding cue people rely on.",
+    transcriptHint: "The stop sign here is bent over and you can barely see it coming up to the corner.",
+  },
+  "Fallen tree / branch": {
+    baseSeverity: 74,
+    accessibility: "Medium",
+    affected: ["pedestrians", "drivers", "cyclists", "wheelchair users"],
+    fix: "Dispatch urban forestry to clear the limb and inspect the tree for further failure risk.",
+    safety: "A downed limb blocks the path and can conceal or create a fall and collision hazard.",
+    transcriptHint: "A big branch came down across the sidewalk and everyone's walking around it into the street.",
+  },
+  "Scooter / bike obstruction": {
+    baseSeverity: 58,
+    accessibility: "Medium",
+    affected: ["wheelchair users", "visually impaired pedestrians", "pedestrians", "parents with strollers"],
+    fix: "Relocate the parked devices to a corral; add designated parking if it recurs.",
+    safety: "Dockless scooters left across the walkway block the accessible path and trip blind pedestrians.",
+    transcriptHint: "There are scooters dumped right across the sidewalk again — no way through with a wheelchair.",
+  },
   Other: {
     baseSeverity: 50,
     accessibility: "Low",
@@ -171,6 +227,13 @@ const VISUAL: Record<HazardCategory, string> = {
   "Unsafe crossing": "Faded crossing markings and poor pedestrian visibility.",
   "Overflowing trash": "Bin overflowing with waste spilling onto the path.",
   "Blocked bike lane": "Bike lane obstructed, forcing a merge into traffic.",
+  "Broken curb cut": "Curb cut broken / crumbling — no flush transition to the crossing.",
+  "Missing tactile paving": "No detectable warning strip at the sidewalk-to-street edge.",
+  "Crosswalk signal issue": "Pedestrian signal appears dark or stuck — no walk phase.",
+  "Flooding / standing water": "Standing water pooled across the path / roadway.",
+  "Damaged sign": "Sign bent, knocked down, or obscured at the approach.",
+  "Fallen tree / branch": "Downed limb blocking the walkway / lane.",
+  "Scooter / bike obstruction": "Dockless scooters / bikes left across the accessible path.",
   Other: "Potential hazard visible in the submitted photo.",
 };
 
@@ -325,11 +388,20 @@ function buildFollowUp(
 // the photo + text; here we keyword-match the real service names.
 export function categorizeText(text: string): HazardCategory {
   const t = text.toLowerCase();
+  // Specific matchers first so they win over the broad ones below.
+  if (/flood|standing water|ponding|drain(age)?|storm water/.test(t)) return "Flooding / standing water";
+  if (/\btree\b|branch|limb|fallen/.test(t)) return "Fallen tree / branch";
+  if (/tactile|detectable warning|truncated dome/.test(t)) return "Missing tactile paving";
+  if (/curb cut|curb ramp/.test(t)) return "Broken curb cut";
+  if (/scooter|dockless|e-?scooter|lime|bird|jump bike/.test(t)) return "Scooter / bike obstruction";
+  if (/walk signal|ped(estrian)? signal|signal (out|broken|dark|stuck)|push button|beg button/.test(t))
+    return "Crosswalk signal issue";
   if (/pothole|pavement|roadway|street defect|asphalt/.test(t)) return "Pothole";
-  if (/sidewalk|curb|trip|pavement crack|walkway/.test(t)) return "Cracked sidewalk";
-  if (/ramp|wheelchair|ada|accessib|curb cut/.test(t)) return "Blocked wheelchair ramp";
+  if (/sidewalk|trip|pavement crack|walkway/.test(t)) return "Cracked sidewalk";
+  if (/ramp|wheelchair|\bada\b|accessib/.test(t)) return "Blocked wheelchair ramp";
   if (/light|lamp|lighting|street ?light|illuminat/.test(t)) return "Broken light";
-  if (/crossing|crosswalk|signal|pedestrian|traffic sign/.test(t)) return "Unsafe crossing";
+  if (/crossing|crosswalk|pedestrian|traffic signal/.test(t)) return "Unsafe crossing";
+  if (/\bsign\b|signage|stop sign|sign down/.test(t)) return "Damaged sign";
   if (/trash|garbage|litter|sanitation|dumping|debris|overflow|waste/.test(t))
     return "Overflowing trash";
   if (/bike|bicycle|cycle/.test(t)) return "Blocked bike lane";

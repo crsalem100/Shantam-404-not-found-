@@ -76,6 +76,56 @@ export const CategoryIcon: Record<HazardCategory, (p: IconProps) => JSX.Element>
       <path d="m6 17 4-7h5l2 7M10 10l-1-3H7" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
     </svg>
   ),
+  "Broken curb cut": ({ className = base }) => (
+    <svg viewBox="0 0 24 24" className={className} aria-hidden fill="none">
+      <path d="M3 15h6l4-6h8" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" />
+      <path d="M3 20h18" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" />
+      <path d="M11 12l-2 2" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeDasharray="2 2" />
+    </svg>
+  ),
+  "Missing tactile paving": ({ className = base }) => (
+    <svg viewBox="0 0 24 24" className={className} aria-hidden fill="none">
+      <rect x="3" y="5" width="18" height="14" rx="1.5" stroke="currentColor" strokeWidth="1.6" />
+      {[8, 12, 16].map((x) =>
+        [9, 14].map((y) => <circle key={`${x}-${y}`} cx={x} cy={y} r="1.2" className="fill-current" />)
+      )}
+    </svg>
+  ),
+  "Crosswalk signal issue": ({ className = base }) => (
+    <svg viewBox="0 0 24 24" className={className} aria-hidden fill="none">
+      <rect x="7" y="3" width="10" height="14" rx="2.5" stroke="currentColor" strokeWidth="1.6" />
+      <circle cx="12" cy="8" r="1.7" className="fill-current" />
+      <path d="M9 20h6M5 5l14 14" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" />
+    </svg>
+  ),
+  "Flooding / standing water": ({ className = base }) => (
+    <svg viewBox="0 0 24 24" className={className} aria-hidden fill="none">
+      <path d="M3 13c2-2 4 2 6 0s4-2 6 0 4 2 6 0" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" />
+      <path d="M3 18c2-2 4 2 6 0s4-2 6 0 4 2 6 0" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" />
+      <path d="M12 3v5" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" />
+    </svg>
+  ),
+  "Damaged sign": ({ className = base }) => (
+    <svg viewBox="0 0 24 24" className={className} aria-hidden fill="none">
+      <path d="M12 3v18" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" />
+      <path d="M6 6h9l2.5 3L15 12H6Z" stroke="currentColor" strokeWidth="1.6" strokeLinejoin="round" />
+      <path d="m9 8 3 2" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" />
+    </svg>
+  ),
+  "Fallen tree / branch": ({ className = base }) => (
+    <svg viewBox="0 0 24 24" className={className} aria-hidden fill="none">
+      <path d="M12 4v11" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" />
+      <path d="M12 9 7 6m5 5 5-4" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" />
+      <path d="M5 20h14" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" />
+    </svg>
+  ),
+  "Scooter / bike obstruction": ({ className = base }) => (
+    <svg viewBox="0 0 24 24" className={className} aria-hidden fill="none">
+      <circle cx="6" cy="17" r="2.6" stroke="currentColor" strokeWidth="1.6" />
+      <circle cx="18" cy="17" r="2.6" stroke="currentColor" strokeWidth="1.6" />
+      <path d="M6 17 13 7h2m3 10-3-7" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
+    </svg>
+  ),
   Other: ({ className = base }) => (
     <svg viewBox="0 0 24 24" className={className} aria-hidden fill="none">
       <path d="M12 9v4m0 4h.01" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />

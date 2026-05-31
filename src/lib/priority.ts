@@ -27,11 +27,18 @@ import type {
 // How high a category can ever score, regardless of report volume.
 export const CATEGORY_CEILING: Record<HazardCategory, number> = {
   "Blocked wheelchair ramp": 100,
+  "Broken curb cut": 98,
+  "Missing tactile paving": 96,
   "Cracked sidewalk": 96,
   "Unsafe crossing": 96,
+  "Crosswalk signal issue": 94,
+  "Fallen tree / branch": 94,
+  "Flooding / standing water": 90,
   Pothole: 92,
   "Broken light": 86,
   "Blocked bike lane": 82,
+  "Scooter / bike obstruction": 80,
+  "Damaged sign": 74,
   Other: 78,
   "Overflowing trash": 60, // ← even 100 reports stays Medium at most
 };
