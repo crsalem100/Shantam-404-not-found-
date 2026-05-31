@@ -1,0 +1,5 @@
+certificates
+*.pem
+fixfirst-qr.png
+.env*.local
+.do

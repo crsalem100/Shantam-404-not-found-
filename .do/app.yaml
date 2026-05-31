@@ -1,0 +1,30 @@
+# DigitalOcean App Platform spec for FixFirst
+# Edit `repo` to your GitHub repository, then:
+#   doctl apps create --spec .do/app.yaml
+name: fixfirst
+region: nyc
+services:
+  - name: web
+    environment_slug: node-js
+    github:
+      repo: your-org/fixfirst # <-- change this
+      branch: main
+      deploy_on_push: true
+    build_command: npm run build
+    run_command: npm run start
+    http_port: 3000
+    instance_count: 1
+    instance_size_slug: basic-xxs
+    routes:
+      - path: /
+    envs:
+      # All optional — app runs on mock logic without them.
+      - key: GEMINI_API_KEY
+        scope: RUN_TIME
+        value: ""
+      - key: ELEVENLABS_API_KEY
+        scope: RUN_TIME
+        value: ""
+      - key: BACKBOARD_API_KEY
+        scope: RUN_TIME
+        value: ""
